@@ -1,0 +1,134 @@
+import h2o
+from h2o.grid.grid_search import H2OGridSearch
+from h2o.estimators.deeplearning import H2ODeepLearningEstimator
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import random
+import sklearn
+
+h2o.init(nthreads=-1, max_mem_size="4g")
+mydata = pd.read_csv("C:/Users/deonf/Desktop/CelebFaces/list_attr_celeba.csv")
+
+mydata['myresponse'] = mydata['Attractive']
+mydata.drop('Attractive', axis=1, inplace=True)
+mydata.drop('image_id', axis=1, inplace=True)
+print(mydata.info())
+
+# Create pandas dataframe
+df = pd.DataFrame(mydata)
+
+# Create frequency table
+table = pd.crosstab(df['myresponse'], columns=[1])
+print(table)
+
+hid_list = [[2], [2, 2], [3, 3], [4, 4], [5, 5], [2, 2, 2], [3, 3, 3], [4, 4, 4], [5, 5, 5]]
+hyper_params = {'hidden': hid_list,
+                'l1': [0, 0.001, 0.05]}
+
+
+
+###Stratified 80 - 20 holdout
+from sklearn.model_selection import StratifiedShuffleSplit
+
+# Create Stratified Shuffle Split
+split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+
+# Split into train/test
+for train_index, test_index in split.split(df, df['myresponse']):
+    df_train = df.iloc[train_index]
+    df_test = df.iloc[test_index]
+
+# Confirm an 80 - 20 split
+print(df_train.shape, df_test.shape)
+
+
+
+###Start grid search
+predictors = list(set(df_train.columns) - {'myresponse'})
+
+# To use H2O, we need to convert each dataframe (both train and test) to h2o format.
+df_train_h2o = h2o.H2OFrame(df_train)
+df_test_h2o = h2o.H2OFrame(df_test)
+
+# The configuration below sets up an empty table that will ultimately contain the results of the grid search,
+# i.e. information on each model that has been tried and the corresponding statistics like error rates, etc.
+random.seed(None)
+id = f'mygrid{random.randint(1, 10000)}'
+
+# NOTE: Running single-threaded for reproducibility. If want to run multi-threaded,
+# change to "reproducible=F" and get rid of the seed in the function below.
+grid = H2OGridSearch(
+    model=H2ODeepLearningEstimator,  # this specifies which algorithm/method of h2o is being run
+    grid_id=id,
+    hyper_params=hyper_params
+    # This tells h2o to try each model implied by the parameters specified earlier in hyper_params list
+)
+
+grid.train(
+    x=predictors,
+    y='myresponse',
+    training_frame=df_train_h2o,
+    nfolds=10,  # this specifies the number of folds (k) for k-fold cross-validation
+
+    use_all_factor_levels=True,
+    standardize=True,  # we are instructing h2o to standardize the numeric predictors
+
+    stopping_tolerance=1e-2,
+    stopping_rounds=2,
+
+    activation=['Rectifier'],  # This sets up the type of activation function to be used in hidden layers
+
+    epochs=100,
+
+    overwrite_with_best_model=True,
+    export_weights_and_biases=True,
+
+    reproducible=True,
+    seed=123
+)
+
+# grid_summary = grid.get_grid(sort_by = 'mae', decreasing=False)
+grid_summaryr2 = grid.get_grid(sort_by='r2', decreasing=True)
+# print(grid_summary)
+print(grid_summaryr2)
+
+# Getting the best model
+best_model = h2o.get_model(grid_summaryr2.model_ids[0])
+best_model
+
+variable_importance = best_model.varimp(use_pandas=True)
+
+# Sort the variable importance by magnitude and print
+variable_importance = variable_importance.sort_values(by='scaled_importance', ascending=False)
+print(variable_importance)
+
+
+
+###Crosstable
+predictions = best_model.predict(df_test_h2o)
+predictions = predictions.as_data_frame()
+
+def round_pred(x):
+    if x > 0:
+        return 1
+    else:
+        return -1
+
+# Apply the function to each value in the predictions dataframe
+predictions = predictions.applymap(round_pred)
+predictions = predictions.to_numpy()
+print(predictions)
+
+# Get true response values
+actual = df_test['myresponse'].to_frame()
+actual = actual.to_numpy()
+print(actual)
+
+actual = actual.flatten()
+predictions = predictions.flatten()
+
+# Create crosstable
+ct = pd.crosstab(actual, predictions, rownames=['Actual'], colnames=['Predicted'])
+# Print crosstable
+print(ct)
