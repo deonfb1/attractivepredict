@@ -1,0 +1,5 @@
+# Facial Attractivness Predictor
+What makes a face attractive? Whatever it is, the answer(s) are extremely nuanced. So after finding a celebrity dataset on facial features (https://www.kaggle.com/datasets/jessicali9530/celeba-dataset), I set out to find an "answer" through an h2o deeplearning neural network.
+
+## Machine Learning Approach
+This project uses h2o, a fast and scalable open-source machine learning platform, to build a facial attractiveness predictor based on a neural network. The neural network is a multi-layer feedforward artificial neural network that learns by adjusting the weights and biases of the connections between the neurons using a gradient descent algorithm. The network is trained on a dataset of celebrity faces with binary labels for different facial features. The network is evaluated using 10-fold cross-validation and various performance metrics such as R-squared and confusion matrix. After training multiple models, it was determined that the model with 3 hidden layers of 5 nodes each was best as the model had the highest R-squared. The network also outputs the variable importance of the features used for prediction.
