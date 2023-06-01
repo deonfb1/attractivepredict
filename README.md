@@ -27,10 +27,10 @@ TP / (TP + FP) = 79.6%
 These results show that the neural network achieved a reasonable level of accuracy in predicting facial attractiveness. However, there is still room for improvement, as the model incorrectly identifies faces with false positives and negatives approximately 20% of the time. 
 
 ### Variable Importance
-In addition to evaluating the model's performance, the neural network also provides information about the importance of the features used for prediction. The variable importance analysis helps understand which facial features have the most significant impact on determining attractiveness. 
-
 <img width="461" alt="Variable Black 1" src="https://github.com/deonfb1/attractivepredict/assets/90005922/9979cbd4-7170-4415-af12-f1f66c9090b0">
 <img width="459" alt="Variable Black 2" src="https://github.com/deonfb1/attractivepredict/assets/90005922/40e7a544-02f3-4741-9fad-e8dbb2eda2d4">
+
+In addition to evaluating the model's performance, the neural network also provides information about the importance of the features used for prediction. The variable importance analysis helps understand which facial features have the most significant impact on determining attractiveness. 
 
 H2O neural networks, like other deep learning models, don't have easily interpretable coefficients like traditional linear models. This lack of coefficients in neural networks makes it challenging to directly determine the contribution of individual variables to the prediction of attractiveness or unattractiveness.
 
