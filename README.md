@@ -32,7 +32,9 @@ In addition to evaluating the model's performance, the neural network also provi
 <img width="461" alt="Variable Black 1" src="https://github.com/deonfb1/attractivepredict/assets/90005922/9979cbd4-7170-4415-af12-f1f66c9090b0">
 <img width="459" alt="Variable Black 2" src="https://github.com/deonfb1/attractivepredict/assets/90005922/40e7a544-02f3-4741-9fad-e8dbb2eda2d4">
 
-H2O neural networks, like other deep learning models, don't have easily interpretable coefficients like traditional linear models. This lack of coefficients in neural networks makes it challenging to directly determine the contribution of individual variables to the prediction of attractiveness or unattractiveness. __So I made a visualization of prominent features seen in both sets of faces, conducting my own analysis.__
+H2O neural networks, like other deep learning models, don't have easily interpretable coefficients like traditional linear models. This lack of coefficients in neural networks makes it challenging to directly determine the contribution of individual variables to the prediction of attractiveness or unattractiveness.
+
+__So I made a visualization of prominent features seen in both sets of faces, conducting my own analysis.__
 
 <img width="697" alt="Importance Tableau" src="https://github.com/deonfb1/attractivepredict/assets/90005922/0642ea10-b1da-47c6-810c-92521b33dd34">
 
